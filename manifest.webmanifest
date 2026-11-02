@@ -1,0 +1,19 @@
+{
+  "name": "مدیریت یکپارچه مطب دکتر حبیب‌الله قنبری",
+  "short_name": "مطب قنبری",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#edf3f6",
+  "theme_color": "#123b4a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

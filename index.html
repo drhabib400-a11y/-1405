@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123b4a">
+<meta name="description" content="سامانه یکپارچه مدیریت مطب دندانپزشکی دکتر حبیب الله قنبری">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>مدیریت یکپارچه مطب دکتر قنبری</title>
+<style>
+:root{--navy:#123b4a;--blue:#087eae;--bg:#edf3f6;--paper:#fff;--ink:#183344;--muted:#6a7e88;--line:#d9e4e9;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,"Segoe UI",sans-serif}
+header{background:linear-gradient(120deg,#102f3b,#176276);color:#fff;padding:15px max(14px,env(safe-area-inset-right));box-shadow:0 4px 18px #102f3b25}
+.head{max-width:1500px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:15px;background:#ffffff1c;display:grid;place-items:center;font-size:27px;border:1px solid #ffffff38}.brand h1{font-size:18px;margin:0 0 4px}.brand small{color:#d7edf1;font-size:11px}
+.status{font-size:11px;border:1px solid #ffffff40;border-radius:30px;padding:7px 10px;white-space:nowrap}.status:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#50d49b;margin-left:7px}
+main{max-width:1500px;margin:auto;padding:14px}.toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}.tabs{display:flex;gap:8px;overflow:auto}.tab,.tool{font:inherit;border:1px solid var(--line);background:#fff;color:#365563;border-radius:11px;padding:11px 15px;white-space:nowrap;cursor:pointer}.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}.tools{display:flex;gap:7px}.tool{font-size:12px;padding:9px 12px}.tool.primary{background:#e5f3f8;border-color:#b9dce8;color:#075c7d}
+.frame-wrap{height:calc(100dvh - 160px);min-height:560px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 8px 24px #163b4a0c}.frame-wrap iframe{display:block;width:100%;height:100%;border:0;background:#f1f5f9}
+.note{font-size:11px;color:var(--muted);padding:10px 3px;text-align:center}
+@media(max-width:700px){header{padding:12px}.brand h1{font-size:15px}.logo{width:42px;height:42px}.head{align-items:flex-start}.status{font-size:10px}.toolbar{align-items:stretch}.tabs{width:100%}.tab{flex:1;padding:10px 11px;font-size:12px}.tools{width:100%}.tool{flex:1}.frame-wrap{height:calc(100dvh - 205px);min-height:470px;border-radius:12px}main{padding:9px}}
+</style>
+</head>
+<body>
+<header><div class="head"><div class="brand"><div class="logo">🦷</div><div><h1>مدیریت یکپارچه مطب دکتر حبیب‌الله قنبری</h1><small>مدیریت مطب · تقویم شیفت · انبارداری</small></div></div><div class="status" id="net">در حال بررسی اتصال</div></div></header>
+<main>
+<div class="toolbar"><nav class="tabs" aria-label="بخش‌ها">
+<button class="tab active" data-file="clinic.html">مدیریت مطب</button>
+<button class="tab" data-file="shifts.html">تقویم شیفت‌ها</button>
+<button class="tab" data-file="inventory.html">انبارداری</button>
+</nav><div class="tools">
+<button class="tool primary" id="install" hidden>نصب برنامه</button>
+<button class="tool" id="backup">پشتیبان اطلاعات</button>
+<button class="tool" id="restore">بازیابی اطلاعات</button>
+<input id="restoreFile" type="file" accept="application/json,.json" hidden>
+</div></div>
+<div class="frame-wrap"><iframe id="appFrame" title="بخش انتخاب‌شده" src="clinic.html"></iframe></div>
+<div class="note">اطلاعات هر دستگاه در همان دستگاه ذخیره می‌شود. برای انتقال اطلاعات بین دستگاه‌ها از پشتیبان‌گیری و بازیابی استفاده کنید.</div>
+</main>
+<script>
+const frame=document.getElementById('appFrame');
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');frame.src=b.dataset.file;
+}));
+function network(){const e=document.getElementById('net');e.textContent=navigator.onLine?'آنلاین':'آفلاین؛ نسخه ذخیره‌شده فعال است';e.style.color=navigator.onLine?'#e4fff2':'#ffe8c4'}
+addEventListener('online',network);addEventListener('offline',network);network();
+let installPrompt;addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;document.getElementById('install').hidden=false});
+document.getElementById('install').onclick=async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;document.getElementById('install').hidden=true};
+document.getElementById('backup').onclick=()=>{
+ const data={app:'ghanbari-dental-pwa',version:1,createdAt:new Date().toISOString(),storage:{}};
+ for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);data.storage[k]=localStorage.getItem(k)}
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='پشتیبان-مطب-قنبری-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url);
+};
+document.getElementById('restore').onclick=()=>document.getElementById('restoreFile').click();
+document.getElementById('restoreFile').onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{const d=JSON.parse(await f.text());if(!d.storage||typeof d.storage!=='object')throw Error('invalid');
+ if(!confirm('اطلاعات فعلی با اطلاعات فایل پشتیبان جایگزین شود؟'))return;
+ Object.keys(d.storage).forEach(k=>localStorage.setItem(k,String(d.storage[k])));
+ alert('بازیابی انجام شد.');frame.contentWindow.location.reload();
+ }catch(err){alert('فایل پشتیبان معتبر نیست.')}finally{e.target.value=''}
+};
+if('serviceWorker' in navigator && location.protocol!=='file:'){addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+</script>
+</body></html>
